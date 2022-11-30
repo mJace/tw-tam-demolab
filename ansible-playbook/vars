@@ -1,0 +1,13 @@
+HUB_CLUSTER_API: "https://api.cluster-s48gw.s48gw.sandbox2848.opentlc.com:6443"
+HUB_CLUSTER_ADMIN: "opentlc-mgr"
+HUB_CLUSTER_PW: "r3dh4t1!"
+MANAGED_CLUSTER_API: "https://api.cluster-smq92.smq92.sandbox222.opentlc.com:6443"
+MANAGED_CLUSTER_ADMIN: opentlc-mgr
+MANAGED_CLUSTER_PW: r3dh4t1!
+ACM_OPERATOR_NAME: advanced-cluster-management
+ACM_OPERATOR_NS: open-cluster-management
+ACM_OPERATOR_CSV: advanced-cluster-management.v2.6.2
+ACM_OPERATOR_CHANNEL: release-2.6
+ACM_OPERATOR_CATALOG_SOURCE: redhat-operators
+ACM_OPERATOR_CATALOG_SOURCE_NS: openshift-marketplace
+CLUSTER_NAME: managed-cluster-1

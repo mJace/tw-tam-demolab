@@ -1,0 +1,66 @@
+---
+# tasks file for new_role
+- name: oc logout
+  shell: oc logout
+  ignore_errors: yes
+
+- name: oc login
+  shell: oc login -u {{ HUB_CLUSTER_ADMIN }} -p {{ HUB_CLUSTER_PW }} {{ HUB_CLUSTER_API }} --insecure-skip-tls-verify=true
+
+- name: oc new-project
+  shell: oc new-project {{ CLUSTER_NAME }}
+  register: oc_newproject
+  ignore_errors: yes
+
+- name: pause
+  pause:
+    prompt: "it seems the project {{ CLUSTER_NAME }} existed. Do you want to proceed?"
+  register: my_pause
+  when: "'exists' in oc_newproject.stderr"
+
+- name: Copy files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.path }}"
+  loop:
+    - src: managedcluster.yml.j2
+      path: /tmp/managedcluster.yml
+
+- name: oc apply
+  shell: oc apply -f /tmp/managedcluster.yml
+
+- name: Pause for 30 seconds for ACM to generate manifest
+  ansible.builtin.pause:
+    seconds: 30
+
+- name: Save klusterlet-crd.yaml to import managed cluster
+  shell: oc get secret {{ CLUSTER_NAME }}-import -n {{ CLUSTER_NAME }} -o jsonpath={.data.crds\\.yaml} | base64 --decode > /tmp/klusterlet-crd.yaml
+
+- name: Save import.yaml to import managed cluster
+  shell: oc get secret {{ CLUSTER_NAME }}-import -n {{ CLUSTER_NAME }} -o jsonpath={.data.import\\.yaml} | base64 --decode > /tmp/import.yaml
+
+- name: oc logout
+  shell: oc logout
+
+- name: oc login
+  shell: oc login -u {{ MANAGED_CLUSTER_ADMIN }} -p {{ MANAGED_CLUSTER_PW }} {{ MANAGED_CLUSTER_API }} --insecure-skip-tls-verify
+
+- name: oc apply klusterlet-crd
+  shell: oc apply -f /tmp/klusterlet-crd.yaml
+
+- name: oc apply import
+  shell: oc apply -f /tmp/import.yaml
+
+- name: oc logout managed
+  shell: oc logout
+
+- name: oc login hub
+  shell:  oc login -u {{ HUB_CLUSTER_ADMIN }} -p {{ HUB_CLUSTER_PW }} {{ HUB_CLUSTER_API }} --insecure-skip-tls-verify=true
+
+- name:  Should see Joined true Available true
+  shell: oc get managedcluster managed-cluster-1 | tail -n1 | awk '{print $4,$5}'
+  register: ocget
+  until: ocget.stdout.find("True True") != -1
+  retries: 30
+  delay: 30
+

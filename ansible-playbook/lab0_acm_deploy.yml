@@ -1,0 +1,7 @@
+---
+- name: deploy ACM OP on Hub
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - role: lab0_acm_op_on_hub
+    - role: lab0_import_cluster

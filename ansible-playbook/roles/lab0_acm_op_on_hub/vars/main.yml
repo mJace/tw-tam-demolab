@@ -1,0 +1,15 @@
+---
+# vars file for new_role
+os_environment:
+  - key: ACM_OPERATOR_NAME 
+    value : advanced-cluster-management  
+  - key: ACM_OPERATOR_NS
+    value : open-cluster-management
+  - key: ACM_OPERATOR_CSV
+    value : advanced-cluster-management.v2.6.2
+  - key: ACM_OPERATOR_CHANNEL
+    value : release-2.6
+  - key: ACM_OPERATOR_CATALOG_SOURCE
+    value : redhat-operators
+  - key: ACM_OPERATOR_CATALOG_SOURCE_NS
+    value : openshift-marketplace

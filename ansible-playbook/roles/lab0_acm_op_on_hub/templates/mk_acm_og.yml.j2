@@ -1,0 +1,7 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: {{ ACM_OPERATOR_NAME }}
+spec:
+  targetNamespaces:
+  - {{ ACM_OPERATOR_NS }}

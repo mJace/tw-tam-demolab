@@ -1,0 +1,12 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {{ ACM_OPERATOR_NAME }}
+  namespace: {{ ACM_OPERATOR_NS }}
+spec:
+  channel: {{ ACM_OPERATOR_CHANNEL }}
+  installPlanApproval: Automatic
+  name: {{ ACM_OPERATOR_NAME }}
+  source: {{ ACM_OPERATOR_CATALOG_SOURCE }}
+  sourceNamespace: {{ ACM_OPERATOR_CATALOG_SOURCE_NS }}
+  startingCSV: {{ ACM_OPERATOR_CSV }}

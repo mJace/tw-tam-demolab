@@ -1,0 +1,56 @@
+---
+# tasks file for new_role
+
+- name: oc logout
+  shell: oc logout
+  ignore_errors: yes
+
+- name: oc login
+  shell: oc login -u {{ HUB_CLUSTER_ADMIN }} -p {{ HUB_CLUSTER_PW }} {{ HUB_CLUSTER_API }} --insecure-skip-tls-verify=true
+
+- name: Create project for ACM Hub-1
+  shell: oc new-project open-cluster-management
+  ignore_errors: yes
+
+- name: Create project for ACM Hub-2
+  shell: oc project open-cluster-management
+  ignore_errors: yes
+
+- name: Copy files
+  template: 
+    src: "{{ item.src }}"
+    dest: "{{ item.path }}"
+  loop:
+    - src: mk_acm_og.yml.j2
+      path: /tmp/mk_acm_og.yml
+    - src: mk_acm_sub.yml.j2
+      path: /tmp/mk_acm_sub.yml
+    - src: mk_mch.yml.j2
+      path: /tmp/mk_mch.yml
+
+
+- name: Create ACM Operator Group
+  shell: oc apply -f /tmp/mk_acm_og.yml
+
+- name: Create ACM operator Subscription
+  shell: oc apply -f /tmp/mk_acm_sub.yml
+
+- name: Retry oc get until the result shows "Succeeded"
+  shell: "oc get csv advanced-cluster-management.v2.6.2 -o=jsonpath='{.status.phase}'"
+  register: result
+  until: result.stdout.find("Succeeded") != -1
+  retries: 30
+  delay: 30
+
+- name: Create MultiClusterHub
+  shell: oc apply -f /tmp/mk_mch.yml
+
+- name: Retry oc get until the result shows "Running"
+  shell: "oc get mch -o=jsonpath='{.items[0].status.phase}'"
+  register: result
+  until: result.stdout.find("Running") != -1
+  retries: 30
+  delay: 30
+
+- name: oc logout
+  shell: oc logout
