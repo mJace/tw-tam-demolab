@@ -42,9 +42,10 @@ RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 RUN mkdir -p /etc/ansible
 RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
 
-RUN wget -P /root --no-check-certificate https://gitlab.cee.redhat.com/jaliang/tw-tam-demolab/-/archive/main/tw-tam-demolab-main.tar.gz \
-&& tar -zxvf tw-tam-demolab-main.tar.gz
+#RUN wget -P /root --no-check-certificate https://gitlab.cee.redhat.com/jaliang/tw-tam-demolab/-/archive/main/tw-tam-demolab-main.tar.gz \
+#&& tar -zxvf tw-tam-demolab-main.tar.gz
 
+COPY ansible-playbook /root
 
 RUN wget -P /tmp --no-check-certificate https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.25/openshift-client-linux.tar.gz \
 && tar -zxvf /tmp/openshift-client-linux.tar.gz \
